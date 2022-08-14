@@ -24,12 +24,7 @@ const connection = {
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
     host: process.env.DB_HOST || "localhost",
-    dialect: "mysql",
-    // database: "",
-    // username: "",
-    // password: "",
-    // host: "",
-    // dialect: "",
+    dialect: "postgres",
   },
 };
 // const connection = require('./connection');

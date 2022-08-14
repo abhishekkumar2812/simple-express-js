@@ -1,6 +1,6 @@
 const { QueryTypes } = require("sequelize");
-const db = require("../config/database");
-const bigObj = require("../trans_obje");
+// const db = require("../config/database");
+// const bigObj = require("../trans_obje");
 
 const productLangService = async () => {
   const x = bigObj.Sheet1;
