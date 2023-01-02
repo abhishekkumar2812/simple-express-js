@@ -1,5 +1,6 @@
 require("dotenv").config({ path: "./.env" });
 const express = require("express");
+const fs = require("fs");
 const { createServer } = require("http");
 // const { Server } = require("socket.io");
 const cors = require("cors");
@@ -90,6 +91,70 @@ app.get("/mobile", (req, res) => {
     email: "bitch@ass.com",
   };
   res.send(result);
+});
+
+const { parse } = require("csv-parse");
+const database = require("./config/database.js");
+
+function convertToSlug(Text) {
+  return Text.toLowerCase()
+    .replace(/[^\w ]+/g, "")
+    .replace(/ +/g, "-");
+}
+
+app.get("/upload", async (req, res) => {
+  // const x = fs.readFileSync("./ab.txt");
+  // console.log(x);
+  const data = [];
+  fs.createReadStream("./Book1.csv")
+    .pipe(parse({ delimiter: ",", from_line: 2 }))
+    .on("data", (row) => {
+      // console.log(row);
+      const eventSlug =
+        convertToSlug(row[1]) +
+        "-" +
+        Math.floor(100000 + Math.random() * 900000).toString();
+
+      let eventStartTime =
+        row[8] + "-" + row[9] + "-" + row[10] + "-" + row[11];
+
+      let eventEndTime =
+        row[12] + "-" + row[13] + "-" + row[14] + "-" + row[15];
+      // if (row[9]) {
+      //   eventStartTime = eventStartTime + "-" + row[10];
+      // }
+
+      // let eventEndTime
+
+      const replacements = {
+        eventName: row[1],
+        eventSlug,
+        source: row[3],
+        createdBy: 1,
+        tags: "physics",
+        eventStartTime,
+        eventEndTime,
+      };
+
+      console.log(replacements);
+
+      // data.push(row);
+      database.query(
+        "insert into events (event_name, event_slug, source, created_by, tags, event_start_time, event_end_time) values (:eventName, :eventSlug, :source, :createdBy, :tags, :eventStartTime, :eventEndTime)",
+        {
+          replacements,
+        }
+      );
+    })
+    .on("end", () => {
+      // console.log(data[0], data[1]);
+    });
+
+  // const users = await database.query("select * from users");
+  // console.log(users);
+  console.log(data[0], data[1]);
+
+  res.send({ msg: "ok" });
 });
 
 /**
